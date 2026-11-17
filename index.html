@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>담기전에 · 번호별 상품 모음</title>
+<meta name="description" content="담기전에 영상에 나온 상품을 번호로 찾아 바로 확인하세요. 12개 상품 · 14호~2호.">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23111111'/%3E%3Cpath d='M9 20.5l7-9 7 9' stroke='%23fff' stroke-width='2.6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+<style>
+  :root {
+    --ink: #111111;
+    --ink-soft: #5b6068;
+    --ink-faint: #9aa0a8;
+    --line: #e8eaee;
+    --bg: #f7f8fa;
+    --white: #ffffff;
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", Pretendard, "Noto Sans KR", "Malgun Gothic", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    line-height: 1.55;
+    word-break: keep-all;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; padding: 0 20px 132px; }
+  @media (min-width: 520px) { .wrap { padding-left: 24px; padding-right: 24px; } }
+
+  header { padding: 34px 0 20px; }
+  .kicker {
+    font-size: 11px; letter-spacing: .18em; text-transform: uppercase;
+    color: var(--ink-faint); margin: 0 0 10px;
+  }
+  h1 { font-size: 30px; line-height: 1.2; letter-spacing: -.03em; margin: 0; font-weight: 800; }
+  .tagline { margin: 10px 0 0; font-size: 14px; color: var(--ink-soft); }
+
+  .channels { display: flex; gap: 8px; margin-top: 18px; flex-wrap: wrap; }
+  .ch {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 13px; border: 1px solid var(--line); border-radius: 999px;
+    background: var(--white); color: var(--ink); text-decoration: none;
+    font-size: 12.5px; font-weight: 600;
+  }
+  .ch:active { background: #f2f4f7; }
+  .ch svg { width: 14px; height: 14px; display: block; }
+
+  .searchbox { position: relative; margin: 22px 0 0; }
+  .searchbox svg {
+    position: absolute; left: 15px; top: 50%; transform: translateY(-50%);
+    width: 17px; height: 17px; color: var(--ink-faint);
+  }
+  #q {
+    width: 100%; padding: 14px 16px 14px 42px;
+    border: 1px solid var(--line); border-radius: 14px;
+    background: var(--white); color: var(--ink);
+    font-size: 16px; font-family: inherit;
+    outline: none; appearance: none;
+  }
+  #q::placeholder { color: var(--ink-faint); }
+  #q::-webkit-search-cancel-button, #q::-webkit-search-decoration { -webkit-appearance: none; appearance: none; }
+  #q:focus { border-color: #c9ced6; }
+
+  .chiprow {
+    display: flex; gap: 7px; overflow-x: auto; padding: 12px 0 2px;
+    scrollbar-width: none; -webkit-overflow-scrolling: touch;
+  }
+  .chiprow::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: 0 0 auto; border: 1px solid var(--line); background: var(--white);
+    color: var(--ink-soft); font-size: 12px; font-weight: 600; font-family: inherit;
+    padding: 6px 11px; border-radius: 999px; cursor: pointer;
+  }
+  .chip:active, .chip.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+  .listhead {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin: 22px 0 10px; padding-top: 4px;
+  }
+  .listhead strong { font-size: 13px; letter-spacing: -.01em; }
+  .listhead span { font-size: 11.5px; color: var(--ink-faint); }
+
+  .card {
+    background: var(--white); border: 1px solid var(--line); border-radius: 16px;
+    padding: 18px 18px 16px; margin-bottom: 12px;
+  }
+  .card-top { display: flex; align-items: center; justify-content: space-between; }
+  .badge {
+    display: inline-block; padding: 4px 9px; border-radius: 7px;
+    background: var(--ink); color: #fff; font-size: 11.5px; font-weight: 700;
+    letter-spacing: .02em;
+  }
+  .date { font-size: 11px; color: var(--ink-faint); font-variant-numeric: tabular-nums; }
+  .name { font-size: 15.5px; line-height: 1.42; letter-spacing: -.02em; margin: 12px 0 0; font-weight: 700; }
+  .price-row { display: flex; align-items: baseline; gap: 7px; margin: 9px 0 0; flex-wrap: wrap; }
+  .price { font-size: 17px; font-weight: 800; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+  .origin { font-size: 12px; color: var(--ink-faint); text-decoration: line-through; }
+  .disc { font-size: 12px; font-weight: 700; color: #d93a3a; }
+  .pricenote { font-size: 12px; color: var(--ink-faint); }
+  .meta { margin: 5px 0 0; font-size: 11.5px; color: var(--ink-soft); }
+  .point { margin: 12px 0 0; font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; }
+  .caution {
+    margin: 9px 0 0; font-size: 12px; color: var(--ink-soft);
+    background: #f7f8fa; border-radius: 9px; padding: 8px 10px; line-height: 1.5;
+  }
+  .caution span {
+    display: inline-block; margin-right: 7px; font-weight: 700; color: var(--ink);
+    font-size: 10.5px; letter-spacing: .04em;
+  }
+  .actions { display: flex; align-items: center; gap: 14px; margin-top: 14px; }
+  .cta {
+    flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    padding: 12px 16px; border-radius: 11px; background: var(--ink); color: #fff;
+    text-decoration: none; font-size: 13.5px; font-weight: 700;
+  }
+  .cta:active { background: #000; }
+  .video { font-size: 12.5px; color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--line); padding-bottom: 1px; }
+
+  .empty { display: none; text-align: center; padding: 46px 0; color: var(--ink-faint); font-size: 13.5px; }
+  .empty.show { display: block; }
+
+  footer { margin-top: 26px; padding-top: 18px; border-top: 1px solid var(--line); }
+  footer p { margin: 0 0 10px; font-size: 12px; color: #767c86; line-height: 1.65; }
+  footer .links { display: flex; gap: 14px; font-size: 12px; }
+  footer .links a { color: var(--ink-soft); text-decoration: none; border-bottom: 1px solid var(--line); }
+
+  .disclosure {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
+    background: rgba(255,255,255,.97); border-top: 1px solid var(--line);
+    backdrop-filter: saturate(140%) blur(8px);
+    padding: 10px 20px calc(10px + env(safe-area-inset-bottom));
+  }
+  .disclosure p {
+    max-width: 480px; margin: 0 auto; font-size: 11px; line-height: 1.5;
+    color: #767c86; letter-spacing: -.01em;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <p class="kicker">Damgi · Shortform Shopping</p>
+    <h1>담기전에</h1>
+    <p class="tagline">영상 속 그 상품, 번호만 찾아서 바로 확인하세요</p>
+    <nav class="channels">
+      <a class="ch" href="https://www.youtube.com/@damgijeonepick" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M21.6 7.2a2.8 2.8 0 0 0-1.97-1.98C17.88 4.75 12 4.75 12 4.75s-5.88 0-7.63.47A2.8 2.8 0 0 0 2.4 7.2A29 29 0 0 0 1.93 12a29 29 0 0 0 .47 4.8a2.8 2.8 0 0 0 1.97 1.98c1.75.47 7.63.47 7.63.47s5.88 0 7.63-.47a2.8 2.8 0 0 0 1.97-1.98A29 29 0 0 0 22.07 12a29 29 0 0 0-.47-4.8M9.75 15.02V8.98L15 12z"/></svg>
+        유튜브
+      </a>
+      <a class="ch" href="https://www.instagram.com/damgijeonepick72" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.4" cy="6.6" r="1.1" fill="currentColor" stroke="none"/></svg>
+        인스타그램
+      </a>
+      <a class="ch" href="https://www.threads.com/@damgijeonepick72" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true"><path d="M12 3c4.6 0 8 3.1 8 7.2 0 2.5-1.2 3.8-2.6 5.1-1 .9-1.4 1.6-1.5 3.1-.1 1.4-1.3 2.6-3.3 2.6-1.1 0-2.1-.4-2.9-1.1"/><circle cx="12" cy="10.5" r="3.6"/></svg>
+        스레드
+      </a>
+    </nav>
+    <div class="searchbox">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5" stroke-linecap="round"/></svg>
+      <input id="q" type="search" inputmode="search" autocomplete="off"
+             placeholder="번호나 키워드로 찾기 (예: 14, 세차기)" aria-label="번호나 상품 키워드로 검색">
+    </div>
+    <div class="chiprow" id="chips"><button class="chip" data-jump="14">14호</button><button class="chip" data-jump="13">13호</button><button class="chip" data-jump="10">10호</button><button class="chip" data-jump="9">9호</button><button class="chip" data-jump="8">8호</button><button class="chip" data-jump="7">7호</button><button class="chip" data-jump="6">6호</button><button class="chip" data-jump="5b">5b호</button><button class="chip" data-jump="5">5호</button><button class="chip" data-jump="4">4호</button><button class="chip" data-jump="3">3호</button><button class="chip" data-jump="2">2호</button></div>
+  </header>
+
+  <div class="listhead">
+    <strong>전체 상품</strong>
+    <span id="count">12개 · 14호–2호</span>
+  </div>
+
+  <main id="list">
+      <article class="card" data-search="14호 에어보나 스팀 클렌저 청소기 ab-sm800 뜨거운 스팀 걸레로 한 번 지나가면 기름때가 열에 녹아 밀려난다 마루·라미네이트처럼 물에 약한 바닥엔 맞지 않는다">
+        <div class="card-top">
+          <span class="badge">14호</span>
+          <span class="date">2026-11-17</span>
+        </div>
+        <h2 class="name">에어보나 스팀 클렌저 청소기 AB-SM800</h2>
+        <div class="price-row"><span class="price">39,800원</span></div>
+        <p class="meta">로켓배송 · 평점 4.5 · 후기 4,267개</p>
+        <p class="point">뜨거운 스팀 걸레로 한 번 지나가면 기름때가 열에 녹아 밀려난다</p>
+        <p class="caution"><span>확인</span>마루·라미네이트처럼 물에 약한 바닥엔 맞지 않는다</p>
+        <div class="actions">
+          <a class="cta" href="https://link.coupang.com/a/iIQK8EMdhs" target="_blank" rel="noopener noreferrer">쿠팡에서 보기<span aria-hidden="true">↗</span></a>
+          <a class="video" href="https://www.threads.com/@damgijeonepick72/post/Df1WxhZkpmE" target="_blank" rel="noopener noreferrer">영상 보기</a>
+        </div>
+      </article>
+      <article class="card" data-search="13호 우스틴스 충전식 무선 고압 세차기 세트 베란다에 눌어붙은 진흙이 물줄기 한 번에 타일 본색을 드러낸다 물통 용량과 배터리 지속시간이 내 청소 면적에 맞는지 확인">
+        <div class="card-top">
+          <span class="badge">13호</span>
+          <span class="date">2026-11-17</span>
+        </div>
+        <h2 class="name">우스틴스 충전식 무선 고압 세차기 세트</h2>
+        <div class="price-row"><span class="price">62,980원</span><span class="origin">189,980원</span><span class="disc">66%</span></div>
+        <p class="meta">로켓배송 · 평점 4.5 · 후기 1,555개</p>
+        <p class="point">베란다에 눌어붙은 진흙이 물줄기 한 번에 타일 본색을 드러낸다</p>
+        <p class="caution"><span>확인</span>물통 용량과 배터리 지속시간이 내 청소 면적에 맞는지 확인</p>
+        <div class="actions">
+          <a class="cta" href="https://link.coupang.com/a/iIQNJyMzGS" target="_blank" rel="noopener noreferrer">쿠팡에서 보기<span aria-hidden="true">↗</span></a>
+          <a class="video" href="https://www.threads.com/@damgijeonepick72/post/Df0mS_mkn9W" target="_blank" rel="noopener noreferrer">영상 보기</a>
+        </div>
+      </article>
+      <article class="card" data-search="10호 탐사 슈즈 폼 클리너 1세트 물 안 쓰고 거품만 올려 문지르면 앞코 회색 때가 거품에 실려 나온다 누렇게 바랜 황변은 이걸로 돌아오지 않는다">
+        <div class="card-top">
+          <span class="badge">10호</span>
+          <span class="date">2026-11-15</span>
+        </div>
+        <h2 class="name">탐사 슈즈 폼 클리너 1세트</h2>
+        <div class="price-row"><span class="price">9,290원</span><span class="origin">17,200원</span><span class="disc">45%</span></div>
+        <p class="meta">로켓배송 · 평점 4.5 · 후기 4,147개</p>
+        <p class="point">물 안 쓰고 거품만 올려 문지르면 앞코 회색 때가 거품에 실려 나온다</p>
+        <p class="caution"><span>확인</span>누렇게 바랜 황변은 이걸로 돌아오지 않는다</p>
+        <div class="actions">
+          <a class="cta" href="https://link.coupang.com/a/iFG4O9vxsG" target="_blank" rel="noopener noreferrer">쿠팡에서 보기<span aria-hidden="true">↗</span></a>
+          <a class="video" href="https://www.threads.com/@damgijeonepick72/post/DfwM-0_kkAq" target="_blank" rel="noopener noreferrer">영상 보기</a>
+        </div>
+      </article>
+      <article class="card" data-search="9호 청정세상 붓으로 바르는 곰팡이 제거제 500g (붓 포함) 흘러내리지 않는 젤 타입이라 줄눈 골에 앉아서 오래 일한다 바르고 몇 시간 두는 방식 — 코팅 실리콘엔 쓰지 않는다">
+        <div class="card-top">
+          <span class="badge">9호</span>
+          <span class="date">2026-11-15</span>
+        </div>
+        <h2 class="name">청정세상 붓으로 바르는 곰팡이 제거제 500g (붓 포함)</h2>
+        <div class="price-row"><span class="price">14,150원</span><span class="origin">15,000원</span><span class="disc">5%</span></div>
+        <p class="meta">로켓배송 · 평점 4.5 · 후기 10,311개</p>
+        <p class="point">흘러내리지 않는 젤 타입이라 줄눈 골에 앉아서 오래 일한다</p>
+        <p class="caution"><span>확인</span>바르고 몇 시간 두는 방식 — 코팅 실리콘엔 쓰지 않는다</p>
+        <div class="actions">
+          <a class="cta" href="https://link.coupang.com/a/iFG3gWleYS" target="_blank" rel="noopener noreferrer">쿠팡에서 보기<span aria-hidden="true">↗</span></a>
+          <a class="video" href="https://www.threads.com/@damgijeonepick72/post/DfvWR6XEpzO" target="_blank" rel="noopener noreferrer">영상 보기</a>
+        </div>
+      </article>
+      <article class="card" data-search="8호 사세 버팔로 윙 골드 (냉동) 1kg 냉동 윙 1kg, 에어프라이어 180도 15분이면 겉바속촉 바스켓에 겹쳐 넣으면 눅눅해진다 — 한 겹으로 펼쳐서">
+        <div class="card-top">
+          <span class="badge">8호</span>
+          <span class="date">2026-11-14</span>
+        </div>
+        <h2 class="name">사세 버팔로 윙 골드 (냉동) 1kg</h2>
+        <div class="price-row"><span class="price">18,900원</span></div>
+        <p class="meta">로켓프레시</p>
+        <p class="point">냉동 윙 1kg, 에어프라이어 180도 15분이면 겉바속촉</p>
+        <p class="caution"><span>확인</span>바스켓에 겹쳐 넣으면 눅눅해진다 — 한 겹으로 펼쳐서</p>
+        <div class="actions">
+          <a class="cta" href="https://link.coupang.com/a/iD11WE5BxQ" target="_blank" rel="noopener noreferrer">쿠팡에서 보기<span aria-hidden="true">↗</span></a>
+          <a class="video" href="https://www.threads.com/@damgijeonepick72/post/DftqDKFEi5Q" target="_blank" rel="noopener noreferrer">영상 보기</a>
+        </div>
+      </article>
+      <article class="card" data-search="7호 필립스 보풀제거기 gc-026 (블루) 뭉친 실밥만 골라 깎아서 니트 결은 그대로 살아난다 니트 두께·울 함량에 맞춰 높이 조절 가이드부터 맞추기">
+        <div class="card-top">
+          <span class="badge">7호</span>
+          <span class="date">2026-11-14</span>
+        </div>
+        <h2 class="name">필립스 보풀제거기 GC-026 (블루)</h2>
+        <div class="price-row"><span class="price">12,780원</span><span class="origin">25,000원</span><span class="disc">48%</span></div>
+        <p class="meta">로켓배송</p>
+        <p class="point">뭉친 실밥만 골라 깎아서 니트 결은 그대로 살아난다</p>
+        <p class="caution"><span>확인</span>니트 두께·울 함량에 맞춰 높이 조절 가이드부터 맞추기</p>
+        <div class="actions">
+          <a class="cta" href="https://link.coupang.com/a/iD1YEJjDsi" target="_blank" rel="noopener noreferrer">쿠팡에서 보기<span aria-hidden="true">↗</span></a>
+          <a class="video" href="https://www.threads.com/@damgijeonepick72/post/DftO8p7Elvp" target="_blank" rel="noopener noreferrer">영상 보기</a>
+        </div>
+      </article>
+      <article class="card" data-search="6호 홈스타 핑크파워 주방 기름 찌든때 클리너 750ml 폼 뿌려 불려두면 후드에 눌어붙은 기름이 스스로 녹아내린다 코팅 후드인지 알루미늄 필터인지 안 보이는 면에 먼저 테스트">
+        <div class="card-top">
+          <span class="badge">6호</span>
+          <span class="date">2026-11-13</span>
+        </div>
+        <h2 class="name">홈스타 핑크파워 주방 기름 찌든때 클리너 750ml</h2>
+        <div class="price-row"><span class="price">6,900원</span><span class="origin">10,900원</span><span class="disc">36%</span></div>
+        <p class="meta">로켓배송</p>
+        <p class="point">폼 뿌려 불려두면 후드에 눌어붙은 기름이 스스로 녹아내린다</p>
+        <p class="caution"><span>확인</span>코팅 후드인지 알루미늄 필터인지 안 보이는 면에 먼저 테스트</p>
+        <div class="actions">
+          <a class="cta" href="https://link.coupang.com/a/iCmYYUIvJI" target="_blank" rel="noopener noreferrer">쿠팡에서 보기<span aria-hidden="true">↗</span></a>
+          <a class="video" href="https://www.threads.com/@damgijeonepick72/post/DfrExAjErjF" target="_blank" rel="noopener noreferrer">영상 보기</a>
+        </div>
+      </article>
+      <article class="card" data-search="5b호 풀무원 모짜렐라 치즈폭포 핫도그 (냉동) 80g×10개 소시지 자리를 통모짜렐라가 채운 핫도그, 전자레인지 1분 700w 기준 1분 — 집 전자레인지 출력부터 확인">
+        <div class="card-top">
+          <span class="badge">5b호</span>
+          <span class="date">2026-11-13</span>
+        </div>
+        <h2 class="name">풀무원 모짜렐라 치즈폭포 핫도그 (냉동) 80g×10개</h2>
+        <div class="price-row"><span class="price">14,990원</span></div>
+        <p class="meta">로켓프레시 · 평점 5.0 · 후기 3,240개</p>
+        <p class="point">소시지 자리를 통모짜렐라가 채운 핫도그, 전자레인지 1분</p>
+        <p class="caution"><span>확인</span>700W 기준 1분 — 집 전자레인지 출력부터 확인</p>
+        <div class="actions">
+          <a class="cta" href="https://link.coupang.com/a/iDjck4fyw0" target="_blank" rel="noopener noreferrer">쿠팡에서 보기<span aria-hidden="true">↗</span></a>
+          <a class="video" href="https://www.threads.com/@damgijeonepick72/post/Dfqgv-_EnXI" target="_blank" rel="noopener noreferrer">영상 보기</a>
+        </div>
+      </article>
+      <article class="card" data-search="5호 에스엠지냄새제로 하수구용 트랩 50mm 물이 지나갈 때만 열리는 뚜껑이라 하수구 냄새와 날벌레를 막는다 뚜껑 빼고 지름 4.4cm·깊이 7cm 안에 들어가는지 재보기">
+        <div class="card-top">
+          <span class="badge">5호</span>
+          <span class="date">2026-11-13</span>
+        </div>
+        <h2 class="name">에스엠지냄새제로 하수구용 트랩 50mm</h2>
+        <div class="price-row"><span class="price">14,090원</span><span class="origin">18,900원</span><span class="disc">25%</span></div>
+        <p class="meta">로켓배송</p>
+        <p class="point">물이 지나갈 때만 열리는 뚜껑이라 하수구 냄새와 날벌레를 막는다</p>
+        <p class="caution"><span>확인</span>뚜껑 빼고 지름 4.4cm·깊이 7cm 안에 들어가는지 재보기</p>
+        <div class="actions">
+          <a class="cta" href="https://link.coupang.com/a/iCmWPCKS5c" target="_blank" rel="noopener noreferrer">쿠팡에서 보기<span aria-hidden="true">↗</span></a>
+          <a class="video" href="https://www.threads.com/@damgijeonepick72/post/DfqMMl4Emll" target="_blank" rel="noopener noreferrer">영상 보기</a>
+        </div>
+      </article>
+      <article class="card" data-search="4호 코멧 다용도 3 in 1 틈새 청소솔 (3개입) 샷시 레일 홈 폭에 맞는 얇은 솔이라 한 번 쓱 지나가면 끝 내 창틀 레일 홈 규격에 맞는지 확인">
+        <div class="card-top">
+          <span class="badge">4호</span>
+          <span class="date">2026-11-12</span>
+        </div>
+        <h2 class="name">코멧 다용도 3 in 1 틈새 청소솔 (3개입)</h2>
+        <div class="price-row"><span class="price">3,180원</span><span class="origin">5,090원</span><span class="disc">37%</span></div>
+        <p class="meta">로켓배송 · 평점 5.0 · 후기 1,037개</p>
+        <p class="point">샷시 레일 홈 폭에 맞는 얇은 솔이라 한 번 쓱 지나가면 끝</p>
+        <p class="caution"><span>확인</span>내 창틀 레일 홈 규격에 맞는지 확인</p>
+        <div class="actions">
+          <a class="cta" href="https://link.coupang.com/a/iB1NsieVhY" target="_blank" rel="noopener noreferrer">쿠팡에서 보기<span aria-hidden="true">↗</span></a>
+          <a class="video" href="https://www.threads.com/@damgijeonepick72/post/Dfoidb-kkK1" target="_blank" rel="noopener noreferrer">영상 보기</a>
+        </div>
+      </article>
+      <article class="card" data-search="3호 세소비 스테인레스 연마제거 탄냄비 세척제 350g 탄 냄비 그을음이 크림 한 번에 밀려 나오고 은빛이 살아난다 코팅 냄비에는 쓰지 않는다 — 스테인리스인지 먼저 확인">
+        <div class="card-top">
+          <span class="badge">3호</span>
+          <span class="date">2026-11-12</span>
+        </div>
+        <h2 class="name">세소비 스테인레스 연마제거 탄냄비 세척제 350g</h2>
+        <div class="price-row"><span class="price">16,500원</span><span class="origin">21,800원</span><span class="disc">24%</span></div>
+        <p class="meta">판매자배송 · 평점 4.5 · 후기 4,929개</p>
+        <p class="point">탄 냄비 그을음이 크림 한 번에 밀려 나오고 은빛이 살아난다</p>
+        <p class="caution"><span>확인</span>코팅 냄비에는 쓰지 않는다 — 스테인리스인지 먼저 확인</p>
+        <div class="actions">
+          <a class="cta" href="https://link.coupang.com/a/iBybm3aIIm" target="_blank" rel="noopener noreferrer">쿠팡에서 보기<span aria-hidden="true">↗</span></a>
+          <a class="video" href="https://www.threads.com/@damgijeonepick72/post/Dfn1n0DknHS" target="_blank" rel="noopener noreferrer">영상 보기</a>
+        </div>
+      </article>
+      <article class="card" data-search="2호 lg생활건강 홈스타 보글보글 발포 배수구 세정제 120g (40g 3포) 1포 붓고 미온수만 부으면 거품이 올라와 배관 찌든 때를 밀어낸다 내 배수구 구조에 포가 들어가는지 먼저 확인">
+        <div class="card-top">
+          <span class="badge">2호</span>
+          <span class="date">2026-11-11</span>
+        </div>
+        <h2 class="name">LG생활건강 홈스타 보글보글 발포 배수구 세정제 120g (40g 3포)</h2>
+        <div class="price-row"><span class="pricenote">가격은 링크에서 확인</span></div>
+        
+        <p class="point">1포 붓고 미온수만 부으면 거품이 올라와 배관 찌든 때를 밀어낸다</p>
+        <p class="caution"><span>확인</span>내 배수구 구조에 포가 들어가는지 먼저 확인</p>
+        <div class="actions">
+          <a class="cta" href="https://link.coupang.com/a/izbcJgdJJs" target="_blank" rel="noopener noreferrer">쿠팡에서 보기<span aria-hidden="true">↗</span></a>
+          <a class="video" href="https://www.threads.com/@damgijeonepick72/post/Dfl8DDrEgar" target="_blank" rel="noopener noreferrer">영상 보기</a>
+        </div>
+      </article>
+    <p class="empty" id="empty">해당 번호나 키워드의 상품이 없어요.<br>다른 번호로 찾아보세요.</p>
+  </main>
+
+  <footer>
+    <p>가격·후기 수는 상품을 확인한 날(발행일) 기준이라 지금과 다를 수 있습니다.<br>
+    영상과 사진은 AI로 만든 활용 예시이며 실제 제품 시연이 아닙니다.</p>
+    <div class="links">
+      <a href="https://www.youtube.com/@damgijeonepick" target="_blank" rel="noopener noreferrer">유튜브</a>
+      <a href="https://www.instagram.com/damgijeonepick72" target="_blank" rel="noopener noreferrer">인스타그램</a>
+      <a href="https://www.threads.com/@damgijeonepick72" target="_blank" rel="noopener noreferrer">스레드</a>
+    </div>
+    <p style="margin-top:12px">최종 갱신 2026.11.17</p>
+  </footer>
+</div>
+
+<div class="disclosure">
+  <p>이 페이지의 일부 링크는 쿠팡 파트너스 활동의 일환으로, 이에 따른 일정액의 수수료를 제공받습니다.</p>
+</div>
+
+<script>
+(function () {
+  var q = document.getElementById('q');
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var empty = document.getElementById('empty');
+  var count = document.getElementById('count');
+  var total = cards.length;
+
+  function apply() {
+    var v = q.value.trim().toLowerCase().replace(/\s+/g, ' ');
+    var shown = 0;
+    cards.forEach(function (c) {
+      var hay = c.getAttribute('data-search') || '';
+      var hit = !v || hay.indexOf(v) !== -1;
+      if (v && /^[0-9]+[a-z]?$/.test(v)) {
+        hit = hay.indexOf(v + '호') !== -1;
+      }
+      c.style.display = hit ? '' : 'none';
+      if (hit) shown++;
+    });
+    empty.classList.toggle('show', shown === 0);
+    count.textContent = v ? shown + '개 찾음' : total + '개';
+  }
+
+  q.addEventListener('input', apply);
+  document.querySelectorAll('.chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      q.value = chip.getAttribute('data-jump');
+      document.querySelectorAll('.chip').forEach(function (c) { c.classList.remove('on'); });
+      chip.classList.add('on');
+      apply();
+      var first = cards.filter(function (c) { return c.style.display !== 'none'; })[0];
+      if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  });
+})();
+</script>
+</body>
+</html>
